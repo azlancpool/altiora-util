@@ -1,0 +1,71 @@
+buildscript {
+	ext{
+		springBootGradlePluginVersion = '2.1.5.RELEASE'
+		dependencyManagementPlugin = '1.0.7.RELEASE'
+	}
+		
+	repositories {
+	    mavenCentral()
+	}
+	
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootGradlePluginVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:${dependencyManagementPlugin}")
+    }
+}
+
+ext {
+	set('springVersion', "2.1.6.RELEASE")
+	set('MsSqlVersion', "7.0.0.jre8")
+	set('jacksonVersion', "2.9.9")
+}
+
+allprojects {
+	apply plugin: 'maven'
+  	group = 'com.altioracorp'
+  	version = '1.0.0-SNAPSHOT'
+  	
+}
+
+
+subprojects {
+	apply plugin: 'java-library'
+	apply plugin: 'maven-publish'
+	apply plugin: 'eclipse' 
+	apply plugin: 'io.spring.dependency-management'
+	
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	
+	repositories {
+		mavenLocal()
+	    mavenCentral()
+	    jcenter()
+	    maven {
+	    	url "https://altioracorp-nexus.jl.serv.net.mx/content/repositories/gp-general/"
+    	}
+	}
+	
+	task sourcesJar(type: Jar) {
+	    archiveClassifier = 'sources'
+	    from sourceSets.main.allJava
+	}
+	
+	artifacts {
+		archives sourcesJar
+	}
+	
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository(url: "https://altioracorp-nexus.jl.serv.net.mx/content/repositories/gp-general-release/") {
+					authentication(userName: System.getProperty('nexus.repo.user'), password: System.getProperty('nexus.repo.password'))
+				}
+				snapshotRepository(url: "https://altioracorp-nexus.jl.serv.net.mx/content/repositories/gp-general-snapshot/") {
+					authentication(userName: System.getProperty('nexus.repo.user'), password: System.getProperty('nexus.repo.password'))
+				}
+			}
+		}
+	}
+	
+}

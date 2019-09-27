@@ -1,0 +1,3 @@
+rootProject.name = 'altiora-util'
+include 'altiora-util-client'
+include 'altiora-util-core'
